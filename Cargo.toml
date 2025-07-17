@@ -1,0 +1,8 @@
+[package]
+name = "tb"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = "1.46.1"
+tytodb-conn = {path="/home/theo/Documents/coding/TytoDB-ConnHandler", features=["tokio"]}
