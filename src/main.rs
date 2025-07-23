@@ -1,12 +1,12 @@
 use tytodb_client::{alba, client_thread, handler::{BatchBuilder, CreateContainerBuilder, CreateRowBuilder, DeleteContainerBuilder, SearchBuilder}, lo, logical_operators::LogicalOperator, ToAlbaAlbaTypes, BIGINT, MEDIUM_STRING};
 
-use std::{fs::File, os::unix::fs::FileExt};
+use std::{env, fs::File, os::unix::fs::FileExt};
 
 
 fn main() {
     let mut secret = [0u8;32];
     println!("--> reading the secret file");
-    if let Ok(f) = File::open("~/TytoDB/.secret"){
+    if let Ok(f) = File::open(format!("{}/TytoDB/.secret", std::env::var("HOME").unwrap())){
         f.read_exact_at(&mut secret,0).unwrap();
     }
     println!("\n==> secret file read succesfully");
