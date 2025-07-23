@@ -6,7 +6,7 @@ use std::{fs::File, os::unix::fs::FileExt};
 fn main() {
     let mut secret = [0u8;32];
     println!("--> reading the secret file");
-    if let Ok(f) = File::open("secret_key_path"){
+    if let Ok(f) = File::open("~/TytoDB/.secret"){
         f.read_exact_at(&mut secret,0).unwrap();
     }
     println!("\n==> secret file read succesfully");
