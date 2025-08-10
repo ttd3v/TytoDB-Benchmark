@@ -14,13 +14,16 @@ fn main() {
     println!("--> connecting to tytodb");
     let client = client_thread::Client::connect("127.0.0.1:4287", secret).unwrap();
     println!("\n==> connected to tytodb succesfully");   
-    
+   
+
+    for layer in 1..10{
+    let a=std::time::Instant::now();
     let create_container_builder = CreateContainerBuilder::new()
     .put_container("nice_container".to_string())
     .insert_header("id".to_string(), BIGINT)
     .insert_header("content".to_string(), MEDIUM_STRING);
     client.execute(create_container_builder.finish().unwrap()).unwrap();
-    for w in 1..100{
+    for w in 1..100*layer{
     let mut batched = BatchBuilder::new();
     batched = batched.transaction(true);
     
@@ -32,9 +35,9 @@ fn main() {
 
     batched = batched.push(create_main_row);
 
-    println!("\n~~> Batching multiple requests\n-> Create container builder\n-> Create main row");
+    //println!("\n~~> Batching multiple requests\n-> Create container builder\n-> Create main row");
     client.execute(batched.finish().unwrap()).unwrap();
-    println!("\n\n--> Batching multiple requests finished\n=> Create container builder finished\n=> Create main row finished\n\n\n");
+    //println!("\n\n--> Batching multiple requests finished\n=> Create container builder finished\n=> Create main row finished\n\n\n");
 
     let search_main_row = SearchBuilder::new()
         .add_container("nice_container".to_string())
@@ -49,12 +52,14 @@ fn main() {
         .add_conditions( ( "id".to_string() , lo!(>=), alba!(w) ), true )
         .add_conditions( ( "id".to_string() , lo!(<=), alba!(w) ), true );
 
-    println!("--> Search");
+    // println!("--> Search");
     let list = client.execute(search_main_row.finish().unwrap()).unwrap().row_list;
-    println!("==> Search finished without errors");
-    println!("=== ROW-LIST-LENGTH: {}",list.len());
-    println!("\n=== LIST: {:?}",list);
+    //println!("==> Search finished without errors");
+    //println!("=== ROW-LIST-LENGTH: {}",list.len());
+    //println!("\n=== LIST: {:?}",list);
     }
     let delc = DeleteContainerBuilder::new().put_container("nice_container".to_string());
     client.execute(delc.finish().unwrap()).unwrap();
+    println!("{}. Execution time: {}ms",layer,a.elapsed().as_millis());
+    }
 }
