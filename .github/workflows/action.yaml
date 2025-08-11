@@ -1,9 +1,11 @@
 name: Run benchmark
-on: 
+on:
+  schedule:
+    - cron: '0 0 * * *'
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
   release:
     types: [published]
   workflow_dispatch:
