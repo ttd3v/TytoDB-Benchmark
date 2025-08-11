@@ -7,7 +7,7 @@ pub fn main() -> Result<()> {
     let db_path = "test.db";
     let _ = fs::remove_file(db_path);
 
-    let conn = Connection::open(db_path)?;
+    let mut conn = Connection::open(db_path)?;
 
     println!(
         "::\tBENCHMARK SQLITE\n - scale: {}\n - range: 1-6\n - schema: id,number,boolean\n",
@@ -26,7 +26,7 @@ pub fn main() -> Result<()> {
     let mut v: i64 = 0;
     for i in 1..=6 {
         let t = Instant::now();
-        let num_batches = (100i64.pow(i as u32) / BATCH_SIZE);
+        let num_batches = 100i64.pow(i as u32) / BATCH_SIZE;
         for _ in 0..num_batches {
             let tx = conn.transaction()?;
             {
