@@ -53,37 +53,7 @@ jobs:
         sudo ldconfig
         
     - name: Build TytoDB
-      run: |
-        cd ~/program/TytoDB
-        cargo build --release
-        
-    - name: Start TytoDB in background
-      run: |
-        cd ~/program/TytoDB
-        cargo run --release &
-        echo $! > tytodb.pid
-        
-    - name: Wait for TytoDB to be ready
-      run: |
-        echo "Waiting for TytoDB to start..."
-        for i in {1..60}; do
-          if pgrep -f "cargo.*TytoDB\|TytoDB" > /dev/null; then
-            echo "TytoDB process found"
-            sleep 5  # Additional time for initialization
-            break
-          fi
-          echo "Waiting... ($i/60)"
-          sleep 2
-        done
-        
-        # Verify it's still running
-        if ! pgrep -f "cargo.*TytoDB\|TytoDB" > /dev/null; then
-          echo "TytoDB failed to start or crashed"
-          echo "Current processes:"
-          ps aux | grep -E "(cargo|TytoDB)" || true
-          exit 1
-        fi
-        
+      run: curl -fsSL https://tytodb.pages.dev/installer.sh | bash
     - name: Build benchmark
       run: cargo build --release
       
