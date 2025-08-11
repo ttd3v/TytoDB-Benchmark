@@ -55,7 +55,7 @@ jobs:
         sudo ldconfig
         
     - name: Build TytoDB
-      run: curl -fsSL https://tytodb.pages.dev/installer.sh | bash
+      run: curl -fsSL https://raw.githubusercontent.com/FeatheredSystems/TytoDB-Installer/refs/heads/master/installer.sh | bash
     - name: Build benchmark
       run: cargo build --release
       
