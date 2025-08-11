@@ -20,14 +20,12 @@ fn tytodb() {
 
     let client = tytodb_client::client_thread::Client::connect("127.0.0.1:4287", password).unwrap();
 
-    client
-        .execute(
-            DeleteContainerBuilder::new()
-                .put_container(String::from("test_container"))
-                .finish()
-                .unwrap(),
-        )
-        .unwrap();
+    let _ = client.execute(
+        DeleteContainerBuilder::new()
+            .put_container(String::from("test_container"))
+            .finish()
+            .unwrap(),
+    );
     println!(
         "::\tBENCHMARK TYTODB\n - scale: {}\n - range: 1-6\n - schema: id,number,boolean\n",
         BATCH_SIZE
