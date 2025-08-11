@@ -42,7 +42,7 @@ jobs:
     - name: Install liburing-dev
       run: |
         sudo apt-get update
-        sudo apt-get install -y liburing-dev
+        sudo apt-get install -y liburing-dev netcat-openbsd
         
     - name: Install liburing from source
       run: |
@@ -67,18 +67,18 @@ jobs:
       run: |
         echo "Waiting for TytoDB to start..."
         for i in {1..30}; do
-          if pgrep -f "tytodb" > /dev/null; then
-            echo "TytoDB is running"
-            sleep 3  # Give it a moment to fully initialize
+          if nc -z 127.0.0.1 4287 2>/dev/null; then
+            echo "TytoDB is listening on port 4287"
+            sleep 3
             break
           fi
           echo "Waiting... ($i/30)"
           sleep 2
         done
         
-        # Verify it's still running
-        if ! pgrep -f "tytodb" > /dev/null; then
-          echo "TytoDB failed to start or crashed"
+        # Verify it's listening
+        if ! nc -z 127.0.0.1 4287 2>/dev/null; then
+          echo "TytoDB failed to start listening on port 4287"
           echo "Current processes:"
           ps aux | grep -E "tytodb" || true
           exit 1
