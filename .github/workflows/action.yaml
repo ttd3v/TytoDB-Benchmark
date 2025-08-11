@@ -54,29 +54,59 @@ jobs:
         sudo make install
         sudo ldconfig
         
-    - name: Build TytoDB
+    - name: Install TytoDB binary
       run: curl -fsSL https://raw.githubusercontent.com/FeatheredSystems/TytoDB-Installer/refs/heads/master/installer.sh | bash
+      
+    - name: Start TytoDB in background
+      run: |
+        echo "Starting TytoDB..."
+        tytodb &
+        echo $! > tytodb.pid
+        
+    - name: Wait for TytoDB to be ready
+      run: |
+        echo "Waiting for TytoDB to start..."
+        for i in {1..30}; do
+          if pgrep -f "tytodb" > /dev/null; then
+            echo "TytoDB is running"
+            sleep 3  # Give it a moment to fully initialize
+            break
+          fi
+          echo "Waiting... ($i/30)"
+          sleep 2
+        done
+        
+        # Verify it's still running
+        if ! pgrep -f "tytodb" > /dev/null; then
+          echo "TytoDB failed to start or crashed"
+          echo "Current processes:"
+          ps aux | grep -E "tytodb" || true
+          exit 1
+        fi
+        echo "TytoDB is ready for benchmarking"
+        
     - name: Build benchmark
       run: cargo build --release
       
     - name: Run benchmark
-      run: |
-        cargo run --release
+      run: cargo run --release
         
     - name: Stop TytoDB
       if: always()
       run: |
-        if [ -f ~/program/TytoDB/tytodb.pid ]; then
-          PID=$(cat ~/program/TytoDB/tytodb.pid)
+        echo "Stopping TytoDB..."
+        if [ -f tytodb.pid ]; then
+          PID=$(cat tytodb.pid)
           if kill -0 $PID 2>/dev/null; then
             kill $PID
             echo "Stopped TytoDB (PID: $PID)"
           fi
+          rm -f tytodb.pid
         fi
-        pkill -f "cargo.*TytoDB\|TytoDB" || true
+        pkill -f "tytodb" || true
         
-    - name: Show running processes
+    - name: Show final processes
       if: always()
       run: |
         echo "=== Final Process Check ==="
-        ps aux | grep -E "(cargo|TytoDB)" || echo "No TytoDB processes found"
+        ps aux | grep -E "tytodb" || echo "No TytoDB processes found"
