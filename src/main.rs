@@ -7,7 +7,8 @@ use tytodb_client::{
     handler::{BatchBuilder, CreateContainerBuilder, CreateRowBuilder, DeleteContainerBuilder},
 };
 
-const BATCH_SIZE: i32 = 1000;
+const BATCH_SIZE: i32 = 10;
+const STEPS: i32 = 10;
 
 fn tytodb() {
     let password: [u8; 32] = {
@@ -27,8 +28,8 @@ fn tytodb() {
             .unwrap(),
     );
     println!(
-        "::\tBENCHMARK TYTODB\n - scale: {}\n - range: 1-6\n - schema: id,number,boolean\n",
-        BATCH_SIZE
+        "::\tBENCHMARK TYTODB\n - scale: {}\n - range: 1-{}\n - schema: id,number,boolean\n",
+        STEPS, BATCH_SIZE
     );
 
     client
@@ -44,9 +45,9 @@ fn tytodb() {
         .unwrap();
 
     let mut v = 0u128;
-    for i in 1..=6 {
+    for i in 1..=STEPS {
         let t = Instant::now();
-        for _ in 1..=(100_i128.pow(i as u32) / BATCH_SIZE as i128) {
+        for _ in 1..=(10_i128.pow(i as u32) / BATCH_SIZE as i128) {
             let mut batc = BatchBuilder::new();
             batc = batc.transaction(true);
             for _ in 1..=BATCH_SIZE {
@@ -61,11 +62,11 @@ fn tytodb() {
             }
             client.execute(batc.finish().unwrap()).unwrap();
         }
-        let step = t.elapsed().as_nanos();
+        let step = t.elapsed().as_millis();
         println!(
             " - time: {} | writes: {}",
             step,
-            (100_i128.pow(i as u32) / BATCH_SIZE as i128)
+            (10_i128.pow(i as u32) / BATCH_SIZE as i128)
         );
     }
 
@@ -81,5 +82,5 @@ fn tytodb() {
 
 fn main() {
     tytodb();
-    sqlite().unwrap();
+    sqlite(BATCH_SIZE, STEPS).unwrap();
 }

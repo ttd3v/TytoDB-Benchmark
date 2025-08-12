@@ -90,9 +90,9 @@ dependencies = [
 
 [[package]]
 name = "falcotcp"
-version = "0.1.2"
+version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4e7d2b4dab50b56deb25c7935133706ac5a26a77f88fe6e2f21d6336904b3c66"
+checksum = "8a5a222af2c42998a660b663090ed0b9c7c8dd83d475fc2d7a1c5893dfe754b3"
 dependencies = [
  "aes-gcm",
 ]
@@ -236,9 +236,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.95"
+version = "1.0.96"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02b3e5e68a3a1a02aad3ec490a98007cbc13c37cbe84a3cd7b8e406d76e7f778"
+checksum = "beef09f85ae72cea1ef96ba6870c51e6382ebfa4f0e85b643459331f3daa5be0"
 dependencies = [
  "unicode-ident",
 ]
