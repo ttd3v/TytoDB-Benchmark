@@ -7,8 +7,8 @@ use tytodb_client::{
     handler::{BatchBuilder, CreateContainerBuilder, CreateRowBuilder, DeleteContainerBuilder},
 };
 
-const BATCH_SIZE: i32 = 10;
-const STEPS: i32 = 10;
+const BATCH_SIZE: i32 = 100;
+const STEPS: i32 = 5;
 
 fn tytodb() {
     let password: [u8; 32] = {
@@ -45,12 +45,12 @@ fn tytodb() {
         .unwrap();
 
     let mut v = 0u128;
-    for i in 1..=STEPS {
+    for i in 2..=STEPS {
         let t = Instant::now();
         for _ in 1..=(10_i128.pow(i as u32) / BATCH_SIZE as i128) {
             let mut batc = BatchBuilder::new();
             batc = batc.transaction(true);
-            for _ in 1..=BATCH_SIZE {
+            for _ in 1..=(if i == 2 { BATCH_SIZE } else { BATCH_SIZE * 10 }) {
                 v += 1;
                 batc = batc.push(
                     CreateRowBuilder::new()
